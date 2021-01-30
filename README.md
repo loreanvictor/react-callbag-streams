@@ -6,11 +6,17 @@
 
 # React Callbag Streams
 
-Use [callbag operators](https://loreanvictor.github.io/callbag-common/) on normal JS variables in React components.
+[![tests](https://img.shields.io/github/workflow/status/loreanvictor/react-callbag-streams/Test%20and%20Report%20Coverage?label=tests&logo=mocha&logoColor=green&style=flat-square)](https://github.com/loreanvictor/react-callbag-streams/actions?query=workflow%3A%22Test+and+Report+Coverage%22)
+[![coverage](https://img.shields.io/codecov/c/github/loreanvictor/react-callbag-streams?logo=codecov&style=flat-square)](https://codecov.io/gh/loreanvictor/react-callbag-streams)
+[![version](https://img.shields.io/npm/v/react-callbag-streams?logo=npm&style=flat-square)](https://www.npmjs.com/package/react-callbag-streams)
+
 
 </div>
 
 <br>
+
+Use [callbag operators](https://loreanvictor.github.io/callbag-common/) on normal JS variables in React components. Easily debounce, flatten,
+throttle, maintain order of async operations (like data fetching), etc.
 
 ```bash
 npm i react-callbag-streams
@@ -44,3 +50,26 @@ function App() {
 }
 ```
 [ ► Playground ](https://stackblitz.com/edit/react-callbag-streams-demo?file=index.tsx)
+
+<br><br>
+
+## Contribution
+
+Be nice and respectful, more importantly super open and welcoming to all.
+
+👉 Useful commands for working on this repo:
+```bash
+git clone https://github.com/loreanvictor/react-callbag-streams.git
+```
+```bash
+npm i              # --> install dependencies
+```
+```bash
+npm start          # --> serves `samples/index.tsx` on localhost:3000
+```
+```bash
+npm test           # --> run all tests
+```
+```bash
+npm run cov:view   # --> view code coverage
+```
