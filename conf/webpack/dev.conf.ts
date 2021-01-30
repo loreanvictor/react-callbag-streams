@@ -1,5 +1,4 @@
-/* tslint:disable: no-default-import */
-/* tslint:disable: no-default-export */
+/* eslint-disable @typescript-eslint/no-var-requires */
 
 import path from 'path';
 import config from './base.conf';

@@ -1,7 +1,8 @@
 export default {
   input: 'dist/es6/index.js',
   output: {
-    name: 'callbagJSX',
+    name: 'reactCallbagStreams',
     format: 'iife',
   },
-}
+};
+

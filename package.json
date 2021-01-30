@@ -21,7 +21,13 @@
     "cov:clean": "rm -fr ./.nyc_output && rm -fr ./coverage"
   },
   "sideEffects": false,
+  "files": [
+    "dist/es6",
+    "dist/es5",
+    "dist/bundles"
+  ],
   "dependencies": {
+    "@rollup/plugin-commonjs": "^17.1.0",
     "callbag-common": "^0.1.5",
     "callbag-subject": "^2.1.0",
     "react": "^17.0.1",
@@ -34,6 +40,7 @@
     "@rollup/plugin-babel": "^5.2.3",
     "@rollup/plugin-node-resolve": "^11.1.1",
     "@types/chai": "^4.2.14",
+    "@types/estree": "0.0.46",
     "@types/jsdom": "^16.2.6",
     "@types/jsdom-global": "^3.0.2",
     "@types/mocha": "^8.2.0",
