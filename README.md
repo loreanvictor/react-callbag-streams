@@ -53,7 +53,126 @@ function App() {
 
 <br><br>
 
-## Contribution
+# Why?
+
+Some extremely basic reactive programming stuff are weirdly difficult and migrain inducing in React,
+while they are pretty trivial with any reactive programming library.
+
+`react-callbag-streams` provides hooks that allow you to treat variables as streams, use these super-convenient
+operators on the stream, and then treat the whole thing again as a plain variable (with also a loading indicator
+as a bonus).
+
+<br>
+
+### Example: Request Ordering
+
+Imagine you fetch data like this:
+
+```tsx
+function App() {
+  const [q, setQ] = useState('')
+  const [info, setInfo] = useState({})
+  
+  useEffect(async () => {
+    setInfo(await pokeInfo(q))
+  }, [q])
+  
+  ...
+}
+```
+
+Imagine you want to fetch info for `"charizard"` and then for `"snorlax"`, but the responses
+to these requests come out of order. Now your query is for `"snorlax"` but you are displaying information
+for `"charizard"`.
+
+Fixing this issue is trivial with [`callbag-flatten`](https://loreanvictor.github.io/callbag-common/operator/flatten):
+
+```tsx
+import { flatten, map, fromPromise } from 'callbag-common'
+import { useStream } from 'react-callbag-streams'
+
+function App() {
+  const [q, setQ] = useState('')
+  const [info] = useStream(
+    q,
+    map(q => fromPromise(pokeInfo(q))),
+    flatten
+  )
+  
+  ...
+}
+```
+
+<br>
+
+### Example: Debouncing
+
+Debouncing, throttling, etc. become extremely easy operations when you treat your data as streams:
+
+```tsx
+import { flatten, map, fromPromise, debounce } from 'callbag-common'
+import { useStream } from 'react-callbag-streams'
+
+function App() {
+  const [q, setQ] = useState('')
+  const [info] = useStream(
+    q,
+    debounce(200),
+    map(q => fromPromise(pokeInfo(q))),
+    flatten
+  )
+  
+  ...
+}
+```
+
+<br>
+
+### Loading Indicator
+
+`useStream()` also provides a loading indicator, which is `true` from the time that a stream variable changes until next emission of the stream:
+
+```tsx
+function App() {
+  const [q, setQ] = useState('')
+  const [info, loading] = useStream(
+    q,
+    debounce(200),
+    map(q => fromPromise(pokeInfo(q))),
+    flatten
+  )
+  
+  ...
+}
+```
+
+<br>
+
+### Stream Combination
+
+You can also use `useMergedStream()` and `useCombinedStream()` for combining stream of multiple variables together and manipulate the combined
+stream:
+
+```tsx
+import { useCombinedStream } from 'react-callbag-streams'
+
+function App() {
+  const [x, setX] = useState('')
+  const [y, setY] = useState(0)
+  
+  const [data, loading] = useCombinedStream([x, y],
+    debounce(200),
+    map(([x, y]) => fromPromise(fetchFilteredData({ x, y }))),
+    flatten
+  )
+  
+  ...
+}
+```
+
+<br><br>
+
+# Contribution
 
 Be nice and respectful, more importantly super open and welcoming to all.
 
