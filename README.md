@@ -43,3 +43,4 @@ function App() {
   )
 }
 ```
+[ ► Playground ](https://stackblitz.com/edit/react-callbag-streams-demo?file=index.tsx)
