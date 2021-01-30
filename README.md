@@ -7,7 +7,6 @@
 # React Callbag Streams
 
 Use [callbag operators](https://loreanvictor.github.io/callbag-common/) on normal JS variables in React components.
-Debounce, map to promise for async operations (data fetching) and then flatten (to maintain strong request / response ordering), etc.
 
 </div>
 
