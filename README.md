@@ -30,14 +30,16 @@ function App() {
       flatten,                            // 👉 flatten requests (only keep one request in-flight)
     )
 
-  return <div>
-    <input type='text'
-      placeholder='pokemon name ...'
-      onInput={e => setQ((e.target as any).value)}/>
-    <br/>
-    <pre>
-      { loading ? 'loading ...' : JSON.stringify(info, undefined, 2) }
-    </pre>
-  </div>
+  return (
+    <>
+      <input type='text'
+        placeholder='pokemon name ...'
+        onInput={e => setQ((e.target as any).value)}/>
+      <br/>
+      <pre>
+        { loading ? 'loading ...' : JSON.stringify(info, undefined, 2) }
+      </pre>
+    </>
+  )
 }
 ```
