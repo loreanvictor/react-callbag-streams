@@ -7,7 +7,7 @@ export function isLongEnough(n: string) {
 }
 
 export async function isTaken(name: string) {
-  const url = new URL('https://hxj1tck8l1.execute-api.us-east-1.amazonaws.com/default/users/taken/');
+  const url = new URL('some-url');
   url.searchParams.append('username', name);
   const response = await fetch(url as any);
   if (response.status === 200) {
