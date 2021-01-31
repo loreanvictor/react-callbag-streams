@@ -1,9 +1,13 @@
 import useCallbag from 'use-callbag';
 import subject from 'callbag-subject';
-import { Callbag, merge, of, pipe, tap } from 'callbag-common';
+import pipe from 'callbag-pipe';
+import of from 'callbag-of';
+import merge from 'callbag-merge';
+import { Callbag } from 'callbag';
 import { useRef, useEffect, useState } from 'react';
 
 import { Op } from './types';
+import { tap } from './tap';
 
 
 export function useStream<T, A>(source: T, a: Op<T, A>): [A, boolean];

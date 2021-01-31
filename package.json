@@ -1,7 +1,7 @@
 {
   "name": "react-callbag-streams",
-  "version": "0.0.4",
-  "description": "handle component state using callbag streams",
+  "version": "0.1.0",
+  "description": "apply streaming operators (like debounce) on your component state / props",
   "main": "dist/es5/index.js",
   "module": "dist/es6/index.js",
   "types": "dist/es6/index.d.ts",
@@ -20,6 +20,13 @@
     "cov:travis": "nyc npm run test && npx codecov",
     "cov:clean": "rm -fr ./.nyc_output && rm -fr ./coverage"
   },
+  "keywords": [
+    "react",
+    "react hooks",
+    "frontend",
+    "streams",
+    "callbag"
+  ],
   "sideEffects": false,
   "files": [
     "dist/es6",
@@ -27,17 +34,22 @@
     "dist/bundles"
   ],
   "dependencies": {
-    "@rollup/plugin-commonjs": "^17.1.0",
-    "callbag-common": "^0.1.5",
+    "callbag-combine": "^1.2.0",
+    "callbag-map": "^1.1.0",
+    "callbag-merge": "^3.2.2",
+    "callbag-of": "^2.0.1",
+    "callbag-pipe": "^1.2.0",
     "callbag-subject": "^2.1.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
     "use-callbag": "^1.0.0"
+  },
+  "peerDependencies": {
+    "react": "^17.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@rollup/plugin-babel": "^5.2.3",
+    "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-node-resolve": "^11.1.1",
     "@types/chai": "^4.2.14",
     "@types/estree": "0.0.46",
@@ -49,6 +61,8 @@
     "@types/webpack": "^4.41.26",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
+    "callbag": "^1.4.0",
+    "callbag-common": "^0.1.5",
     "chai": "^4.2.0",
     "eslint": "^7.18.0",
     "html-webpack-plugin": "^4.5.1",
@@ -57,6 +71,8 @@
     "mocha": "^8.2.1",
     "nyc": "^15.1.0",
     "nyc-config-tsx": "^0.1.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "rollup": "^2.38.1",
     "rollup-plugin-terser": "^7.0.2",
     "ts-loader": "^8.0.14",
