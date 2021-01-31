@@ -128,19 +128,65 @@ function App() {
 
 <br>
 
-### Loading Indicator
+### Why Callbags?
 
-`useStream()` also provides a loading indicator, which is `true` from the time that a stream variable changes until next emission of the stream:
+- They are extremely lightweight. For example, [callbag-merge](https://github.com/staltz/callbag-merge) is under `350B`, while the [`merge()` factory in RxJS](https://rxjs-dev.firebaseapp.com/api/index/function/merge) is about `4.3KB`
+in size.
+- They are pritty simple (for example compare [callbag-map](https://github.com/staltz/callbag-map) with [RxJS's `map()`](https://github.com/ReactiveX/rxjs/blob/master/src/internal/operators/map.ts)).
+- Callbags is a specification, not a library. This, combined with the simplicity, allows for fully decentralized and community-driven
+development of utilities and libraries, while for something like RxJS most of the utilities come from the library itself.
+
+<br><br>
+
+# Usage
+
+The whole point of this library is that it allows using callbag operators on variables inside React components.
+You can find a collection of useful and commonly used callbag operators [here](https://loreanvictor.github.io/callbag-common/)
+or [here](https://github.com/staltz/callbag-basics), find a list of available community operators [here](https://github.com/callbag/callbag/wiki)
+or [here](https://www.npmjs.com/search?q=callbag-), or even [easily create your own operators](https://github.com/callbag/callbag/blob/master/getting-started.md).
+
+<br>
+
+👉 `useStream()` allows you to treat a variable as a stream:
 
 ```tsx
-function App() {
-  const [q, setQ] = useState('')
-  const [info, loading] = useStream(
-    q,
-    debounce(200),
-    map(q => fromPromise(pokeInfo(q))),
-    flatten
-  )
+import { useStream } from 'react-callbag-streams'
+import { filter } from 'callbag-common'
+
+function MyComp({ prop }) {
+  //
+  // 👉 even will only have even values of prop, and won't be updated
+  //    for its odd values.
+  //
+  const [even] = useStream(prop, filter(x => x % 2 === 0))
+  
+  ...
+}
+```
+```tsx
+import { useStream } from 'react-callbag-streams'
+import { debounce } from 'callbag-common'
+
+function MyComp({ prop }) {
+  //
+  // 👉 debounced will be the latest value of prop, 200ms after its last change.
+  //    it will not be updated while prop is changing at intervals shorter than 200ms.
+  //
+  const [debounced] = useStream(prop, debounce(200))
+  
+  ...
+}
+```
+```tsx
+import { useStream } from 'react-callbag-streams'
+import { map, fromPromise, flatten } from 'callbag-common'
+
+function MyComp({ prop }) {
+  //
+  // 👉 fetched will be the result of asyncFetch() for latest value of prop,
+  //    even if values for asyncFetch come out of order.
+  //
+  const [fetched] = useStream(prop, map(p => fromPromise(asyncFetch(p))), flatten)
   
   ...
 }
@@ -148,27 +194,94 @@ function App() {
 
 <br>
 
-### Stream Combination
-
-You can also use `useMergedStream()` and `useCombinedStream()` for combining stream of multiple variables together and manipulate the combined
-stream:
+👉 `useStream()` also provides a loading indicator. The loading indicator is `true` between the time that the
+source variable changes until the next emission of the stream.
 
 ```tsx
-import { useCombinedStream } from 'react-callbag-streams'
+const [fetched, loading] = useStream(prop, map(p => fromPromise(asyncFetch(p))), flatten)
+```
 
-function App() {
-  const [x, setX] = useState('')
-  const [y, setY] = useState(0)
+<br>
+
+⚡⚡ Checkout this [real-life example](https://stackblitz.com/edit/react-callbag-streams-demo).
+
+<br>
+
+👉 `useMergedStream()` allows you to treat multiple variables as one stream. Whenever any of the variables
+has a new value, the stream will emit that value.
+
+```tsx
+import { useMergedStream } from 'react-callbag-streams'
+import { debounce } from 'callbag-common'
+
+function MyComp() {
+  const [a] = useState()
+  const [b] = useState()
   
-  const [data, loading] = useCombinedStream([x, y],
-    debounce(200),
-    map(([x, y]) => fromPromise(fetchFilteredData({ x, y }))),
-    flatten
-  )
+  //
+  // 👉 merged will be the latest value of either a or b (based on which changed later),
+  //    200ms after the latest change to either.
+  //
+  const [merged] = useMergedStream([a, b], debounce(200))
   
   ...
 }
 ```
+
+<br>
+
+👉 `useCombinedStream()` is similar to `useMergedStream()`, except that it emits an array of latest values of all provided
+variables, every time any of them changes:
+
+```tsx
+import { useCombinedStream } from 'react-callbag-streams'
+
+//
+// this app finds repositories on github based on a query and language
+//
+function App() {
+  const [q, setQ] = useState('')
+  const [l, setL] = useState('javascript')
+
+  const [repos, loading] = useCombinedStream(
+    [q, l],                                             // 👉 a combined stream of query and language
+    filter(([q]) => q.length >= 2),                     // 👉 filter out when query is too short
+    debounce(1000),                                     // 👉 debounce the combo by a second (github API will block us o.w.)
+    map(([q, l]) => fromPromise(search(q, l))),         // 👉 search in github api using query and language
+    flatten,                                            // 👉 flatten the stream (preserve order of responses)
+    map(res =>                                          // 👉 format the incoming result ...
+      res.items.map(item =>                             // .. take each repository ...
+        ({ name: item.name, url: item.url })            // .. get its name and its url
+      )
+    ),
+  )
+
+  return <>
+    <input type='text'
+      placeholder='keywords ....'
+      value={q}
+      onInput={e => setQ((e.target as any).value)}/>
+    <input type='text'
+      placeholder='language'
+      value={l}
+      onInput={e => setL((e.target as any).value)}/>
+    <br/>
+    { q.length >= 2 ?
+      (
+        loading ? 'loading ...' : (
+          <ul>
+            { repos?.map(repo => (
+              <li key={repo.url}><a href={repo.url}>{repo.name}</a></li>
+            ))}
+          </ul>
+        )
+      ) : ''
+    }
+  </>
+}
+```
+[ ► Playground ](https://stackblitz.com/edit/react-callbag-streams-2?file=index.tsx)
+
 
 <br><br>
 
