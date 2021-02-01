@@ -251,7 +251,7 @@ function App() {
     flatten,                                            // 👉 flatten the stream (preserve order of responses)
     map(res =>                                          // 👉 format the incoming result ...
       res.items.map(item =>                             // .. take each repository ...
-        ({ name: item.name, url: item.url })            // .. get its name and its url
+        ({ name: item.name, url: item.html_url })       // .. get its name and its url
       )
     ),
   )
