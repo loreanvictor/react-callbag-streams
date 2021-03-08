@@ -1,13 +1,10 @@
 import useCallbag from 'use-callbag';
-import subject from 'callbag-subject';
 import pipe from 'callbag-pipe';
-import of from 'callbag-of';
-import merge from 'callbag-merge';
-import { Callbag } from 'callbag';
-import { useRef, useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { Op } from './types';
-import { tap } from './tap';
+import { Op } from './util/types';
+import { tap } from './util/tap';
+import { useSource } from './use-source';
 
 
 export function useStream<T, A>(source: T, a: Op<T, A>): [A, boolean];
@@ -43,20 +40,12 @@ export function useStream<T>(source: T, ...pipes: Op<any, any>[]): any;
 
 
 export function useStream<T>(source: T, ...pipes: ((x: any) => any)[]) {
-  const src = useRef<Callbag<T, T>>();
+  const src = useSource(source);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!src.current) {
-      src.current = subject<T>();
-    }
-
-    src.current(1, source);
-  }, [source]);
 
   return [
     useCallbag(undefined, () => (pipe as any)(
-      merge(src.current!, of(source)),
+      src,
       tap(() => setLoading(true)),
       ...pipes,
       tap(() => setLoading(false)),

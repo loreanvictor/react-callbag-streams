@@ -1,6 +1,6 @@
 import merge from 'callbag-merge';
 
-import { Op } from './types';
+import { Op } from './util/types';
 import { useStreams } from './use-streams';
 
 

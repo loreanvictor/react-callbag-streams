@@ -1,13 +1,11 @@
 import useCallbag from 'use-callbag';
-import subject from 'callbag-subject';
 import pipe from 'callbag-pipe';
-import merge from 'callbag-merge';
-import of from 'callbag-of';
-import { Source, Callbag } from 'callbag';
-import { useRef, useEffect, useState } from 'react';
+import { Source } from 'callbag';
+import { useState } from 'react';
 
-import { Op } from './types';
-import { tap } from './tap';
+import { Op } from './util/types';
+import { tap } from './util/tap';
+import { useSource } from './use-source';
 
 
 export type Combinator<X, Y> = (sources: Source<X>[]) => Source<Y>;
@@ -54,26 +52,12 @@ export function useStreams<T, W>(sources: T[], combinator: Combinator<T, W>, ...
 
 
 export function useStreams<T, W>(sources: T[], combinator: Combinator<T, W>, ...pipes: ((x: any) => any)[]) {
-  const srcs = useRef<Callbag<T, T>[]>();
+  const srcs = sources.map(source => useSource(source));
   const [loading, setLoading] = useState(false);
-
-  sources.forEach((source, i) => {
-    useEffect(() => {
-      if (!srcs.current) {
-        srcs.current = [];
-      }
-
-      if (!srcs.current[i]) {
-        srcs.current[i] = subject<T>();
-      }
-
-      srcs.current[i](1, source);
-    }, [source]);
-  });
 
   return [
     useCallbag(undefined, () => (pipe as any)(
-      combinator(srcs.current!.map((s, i) => merge(s, of(sources[i])))),
+      combinator(srcs),
       tap(() => setLoading(true)),
       ...pipes,
       tap(() => setLoading(false)),

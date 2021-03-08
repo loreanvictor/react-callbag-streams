@@ -1,6 +1,6 @@
 {
   "name": "react-callbag-streams",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "apply streaming operators (like debounce) on your component state / props",
   "main": "dist/es5/index.js",
   "module": "dist/es6/index.js",
@@ -37,9 +37,7 @@
     "callbag-combine": "^1.2.0",
     "callbag-map": "^1.1.0",
     "callbag-merge": "^3.2.2",
-    "callbag-of": "^2.0.1",
     "callbag-pipe": "^1.2.0",
-    "callbag-subject": "^2.1.0",
     "use-callbag": "^1.0.0"
   },
   "peerDependencies": {
