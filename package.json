@@ -39,6 +39,7 @@
     "callbag-map": "^1.1.0",
     "callbag-merge": "^3.2.2",
     "callbag-pipe": "^1.2.0",
+    "callbag-subject": "^2.1.0",
     "use-callbag": "^1.0.0"
   },
   "peerDependencies": {
@@ -62,6 +63,7 @@
     "@typescript-eslint/parser": "^4.14.1",
     "callbag": "^1.4.0",
     "callbag-common": "^0.1.5",
+    "callbag-scan": "^1.1.0",
     "chai": "^4.2.0",
     "eslint": "^7.18.0",
     "html-webpack-plugin": "^4.5.1",
