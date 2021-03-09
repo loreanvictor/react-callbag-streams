@@ -303,19 +303,19 @@ function App() {
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(0)
 
-  const page$ = useSource(page)                            // --> direct access to a stream from values of page
+  const page$ = useSource(page)                            // 👉 direct access to a stream from values of page
   const [entries, loading] = useStream(
-    query,                                                 // --> for each query
-    tap(() => setPage(0)),                                 // ... reset the page counter
-    map(q =>                                               // ... and map the query to a query-specific sub-stream
+    query,                                                 // 👉 for each query
+    tap(() => setPage(0)),                                 // .. reset the page counter
+    map(q =>                                               // .. and map the query to a query-specific sub-stream
       pipe(
-        combine(of(q), page$),                             // --> combine query value and values from page stream
-        map(([q, p]) => fromPromise(fetch(q, p))),         // --> for each new pair, fetch data
+        combine(of(q), page$),                             // 👉 combine query value and values from page stream
+        map(([q, p]) => fromPromise(fetch(q, p))),         // 👉 for each new pair, fetch data
         flatten,
-        scan((all, page) => [...all, ...page], []),        // --> accumulate results (this is query-specific stream)
+        scan((all, page) => [...all, ...page], []),        // 👉 accumulate results (this is query-specific stream)
       )
     ),
-    flatten                                                // --> flatten the query-speicifc substream
+    flatten                                                // 👉 flatten the query-speicifc substream
   )
 
   return <>
