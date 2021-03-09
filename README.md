@@ -282,6 +282,55 @@ function App() {
 ```
 [ ► Playground ](https://stackblitz.com/edit/react-callbag-streams-2?file=index.tsx)
 
+<br>
+
+👉 `useSource()` provides access to the underlying callbags created from variables / parameters. It is useful for situations
+advanced stream combination is needed:
+
+```tsx
+import { useStream, useSource } from 'react-callbag-streams'
+
+import fetch from './fetch'
+
+//
+// in this example we have a list of entries that is fetched in a paginated manner,
+// and is based on a given query.
+//
+// - when the user changes the query, we want the pagination to reset and result set to be refreshed
+// - when the user loads more content, we want them to be added to current data
+//
+function App() {
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(0)
+
+  const page$ = useSource(page)                            // --> direct access to a stream from values of page
+  const [entries, loading] = useStream(
+    query,                                                 // --> for each query
+    tap(() => setPage(0)),                                 // ... reset the page counter
+    map(q =>                                               // ... and map the query to a query-specific sub-stream
+      pipe(
+        combine(of(q), page$),                             // --> combine query value and values from page stream
+        map(([q, p]) => fromPromise(fetch(q, p))),         // --> for each new pair, fetch data
+        flatten,
+        scan((all, page) => [...all, ...page], []),        // --> accumulate results (this is query-specific stream)
+      )
+    ),
+    flatten                                                // --> flatten the query-speicifc substream
+  )
+
+  return <>
+    <input
+      type='text'
+      placeholder='type something ...'
+      onInput={e => setQuery((e.target as any).value)}
+    />
+    { entries?.map(entry => <div>{entry}</div>) : '' }
+    <br />
+    <button onClick={() => setPage(page + 1)}>Load More</button>
+  </>
+}
+```
+[ ► Playground ](https://stackblitz.com/edit/react-callbag-streams-demo-4?file=index.tsx)
 
 <br><br>
 
