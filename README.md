@@ -285,7 +285,7 @@ function App() {
 <br>
 
 👉 `useSource()` provides access to the underlying callbags created from variables / parameters. It is useful for situations
-advanced stream combination is needed:
+where advanced stream combination is needed:
 
 ```tsx
 import { useStream, useSource } from 'react-callbag-streams'
