@@ -207,6 +207,8 @@ const [fetched, loading] = useStream(prop, map(p => fromPromise(asyncFetch(p))),
 
 <br>
 
+## Working Multiple Streams
+
 👉 `useMergedStream()` allows you to treat multiple variables as one stream. Whenever any of the variables
 has a new value, the stream will emit that value.
 
@@ -284,6 +286,8 @@ function App() {
 
 <br>
 
+## Working with Callbags Directly
+
 👉 `useSource()` provides access to the underlying callbags created from variables / parameters. It is useful for situations
 where advanced stream combination is needed:
 
@@ -331,6 +335,84 @@ function App() {
 }
 ```
 [ ► Playground ](https://stackblitz.com/edit/react-callbag-streams-demo-4?file=index.tsx)
+
+<br>
+
+👉 `useSignal()` provides a callbag source you can utilize in your streams. In the pagination example provided above, instead of a state
+for the `page`, we can have a `loadMoreSignal` and calculate the page in the stream accordingly:
+
+```tsx
+import { useStream, useSignal } from 'react-callbag-streams'
+
+// ...
+
+function App() {
+
+  // ...
+  
+  const [loadMoreSignal, loadMore] = useSignal()
+  
+  const [entries, loading] = useStream(
+    query,
+    map(q =>
+      pipe(
+        combine(
+          of(q),
+          pipe(                                      
+            loadMoreSignal,                          // 👉 so for each signal
+            scan(p => ++p, 0),                       // .. we increase the page number
+            startWith(0)                             // .. starting with 0
+          )
+        ),
+        map(([q, p]) => fromPromise(fetch(q, p))),
+        flatten,
+        scan((all, page) => [...all, ...page], []),
+      )
+    ),
+    flatten
+  )
+  
+  return (
+  
+    // ...
+    
+    <button onClick={() => loadMore()}>Load More</button>
+  )
+}
+```
+[ ► Playground ](https://stackblitz.com/edit/react-callbag-streams-demo-5?file=index.tsx)
+
+<br>
+
+⚠️ Note that `useSource()` and `useSignal()` return callbags (basically raw streams) and not plain values, so you cannot use their
+returned result as raw values. For turning them into raw values, you can simply use the [`useCallbag()`](https://github.com/Andarist/use-callbag) hook:
+
+```tsx
+import useCallbag from 'use-callbag'
+
+// ...
+
+const [signal, loadMore] = useSignal()
+const page = useCallbag(0, pipe(signal, scan(p => ++p, 0)))
+
+// ...
+
+return (
+  // ...
+  <label>Page: {page}</label>
+  // ...
+)
+```
+
+Essentially, `useStream()` is equivalent to a `useSource()` followed by a `useCallbag()`:
+```tsx
+const [streamed] = useStream(prop, ...)
+
+// -- OR --
+
+const stream = useSource(prop)
+const streamed = useCallbag(undefined, () => pipe(stream, ...))
+```
 
 <br><br>
 
