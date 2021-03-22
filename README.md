@@ -393,7 +393,7 @@ import useCallbag from 'use-callbag'
 // ...
 
 const [signal, loadMore] = useSignal()
-const page = useCallbag(0, pipe(signal, scan(p => ++p, 0)))
+const page = useCallbag(0, (initial) => pipe(signal, scan(p => ++p, initial)))
 
 // ...
 
